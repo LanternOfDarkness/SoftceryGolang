@@ -2,6 +2,8 @@ package storage
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -9,8 +11,8 @@ import (
 
 
 func (fs *ImageStorage) LoadImage(id string, quality string) ([]byte, error) {
-  imgName := id + "_" + quality + ".jpg"
-	imgPath := filepath.Join(fs.storagePath, imgName)
+  imgName := id +  ".jpg"
+	imgPath := filepath.Join(fs.storagePath + "/" + quality, imgName)
   if _, err := os.Stat(imgPath); os.IsNotExist(err) {
 		return nil, errors.New("File not found")
 	}
@@ -23,26 +25,19 @@ func (fs *ImageStorage) LoadImage(id string, quality string) ([]byte, error) {
 	return image, nil
 }
 
-func (fs *ImageStorage) SaveImage(quality string, image []byte) error {
 
-  imgName := fs.getNewImageID() + "_" + quality + ".jpg"
-  imgPath := filepath.Join(fs.storagePath, imgName)
 
-  fo, err := os.Create(imgPath)
+func (fs *ImageStorage) SaveImage(quality string, img []byte) error {
+
+  imgName := fmt.Sprint(GetNewImageID()) + ".jpg"
+  imgPath := filepath.Join(fs.storagePath + "/" + quality, imgName)
+
+  err := os.WriteFile(imgPath, img, 0644)
   if err != nil {
+		log.Fatal(err)
     return err
   }
-  defer fo.Close()
 
-  _, err = fo.Write(image)
-  if err != nil {
-    return err
-  }
-  
   return nil
 }
 
-func (fs *ImageStorage) getNewImageID() string {
-  
-  return "1"
-}

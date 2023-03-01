@@ -23,7 +23,8 @@ or with custom login and password:
 ## Run project
 
 - Setting up configs in `config/config.go`
-- `make run`
+
+- `make run` - run project
 
 # Description
 
