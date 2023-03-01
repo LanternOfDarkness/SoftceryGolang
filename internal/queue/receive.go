@@ -1,27 +1,37 @@
 package queue
 
 import (
+	"log"
+
 	"github.com/LanternOfDarkness/SoftceryGolang/internal/image"
 )
 
 
-func RunReciever() {
+func RunReciever() error{
 	rabbitMQ := NewRabbitMQ()
 	rabbitMQ.Connect()
-	rabbitMQ.CreateChannel()
-	rabbitMQ.CreateQueue(rabbitMQ.QueueName)
+	if err := rabbitMQ.CreateChannel(); err != nil {
+		return err
+	}
+	if err := rabbitMQ.CreateQueue(rabbitMQ.QueueName); err != nil {
+		return err
+	}
 	var forever chan bool
-	go func () {
-
-		rabbitMQ.Receive()
+	go func () error {
+		if err := rabbitMQ.Receive(); err != nil {
+			log.Fatal("Failed to receive message from queue:", err)
+			return err
+		}
+		return nil
 	}()
 	<-forever
 	
 	rabbitMQ.CloseChannel()
 	rabbitMQ.Close()
+	return nil
 }
 
-func (r *RabbitMQ) Receive() {
+func (r *RabbitMQ) Receive() error{
 	msgs, err := r.Channel.Consume(
 		r.Queue.Name,
 		"",
@@ -32,12 +42,13 @@ func (r *RabbitMQ) Receive() {
 		nil,
 	)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	for msg := range msgs {
 
 		if err:= image.ProcessImage(msg.Body); err != nil {
-			panic(err)
+			return err
 		}
 	}
+	return nil
 }

@@ -31,9 +31,11 @@ func (s *ImageUploadService) UploadImage(c *gin.Context) {
     c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
     return
   }
-  queue.SendImageToQueue(imgBytes)
+  if err := queue.SendImageToQueue(imgBytes); err != nil {
+    c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    return
+  }
   
-
 	c.JSON(http.StatusAccepted, gin.H{
 		"message": "Image uploaded successfully.",
     "imageId": store.GetNewImageID(),

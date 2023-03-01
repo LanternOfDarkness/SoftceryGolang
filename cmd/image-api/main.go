@@ -14,14 +14,13 @@ func main() {
 	// Get config
   c := config.NewConfig()
 	
-	
-
 	// Init storage
 	store.Storage = store.NewStorage(c.FileStoragePath)
 	if err := store.Storage.LoadIdFromFiles(); err != nil {
 		log.Fatal("Failed to load image id from files:", err)
 	}
 	
+	// Run queue reciever
 	go queue.RunReciever()
 
 	// Init router
@@ -29,7 +28,6 @@ func main() {
 	if err := r.Run(c.BindAddr); err != nil {
     log.Fatal("Failed to start server:", err)
   }
-	// RabbitMQ run receive forever loop
 
 }
 

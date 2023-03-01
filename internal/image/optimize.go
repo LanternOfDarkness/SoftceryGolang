@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
+	_ "image/png"
 
 	store "github.com/LanternOfDarkness/SoftceryGolang/internal/storage"
 	"github.com/nfnt/resize"
@@ -15,7 +16,7 @@ type ImageSize struct {
 	Height int
 }
 
-var qualityList = []int{ 75, 50, 25}
+var qualityList = []int{75, 50, 25}
 
 func ProcessImage(img []byte) error {
 	err := store.Storage.SaveImage("100", img)
@@ -39,22 +40,18 @@ func ResizeImage(file []byte, quality int) error {
 		return err
 	}
 	imgSize := GetImageSize(img)
-	if err != nil {
-		return err
-	}
-	
 	newWidth = uint(imgSize.Width * quality / 100)
 	newHeight = uint(imgSize.Height * quality / 100)
-	newImage := resize.Resize(newWidth, newHeight, img, resize.Lanczos3)
 
+	newImage := resize.Resize(newWidth, newHeight, img, resize.Lanczos3)
 	bytesBuff := new(bytes.Buffer)
-	err = jpeg.Encode(bytesBuff, newImage, nil)
-	if err != nil {
+
+	if err := jpeg.Encode(bytesBuff, newImage, nil); err != nil {
 		return err
 	}
 	imgBytes := bytesBuff.Bytes()
 
-	err = store.Storage.SaveImage(fmt.Sprint(quality), imgBytes); if err != nil {
+	if err := store.Storage.SaveImage(fmt.Sprint(quality), imgBytes); err != nil {
 		return err
 	}
 

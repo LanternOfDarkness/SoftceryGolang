@@ -4,18 +4,27 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func SendImageToQueue(img []byte) {
-  rabbitMQ := NewRabbitMQ()
-  rabbitMQ.Connect()
-  rabbitMQ.CreateChannel()
-  rabbitMQ.CreateQueue(rabbitMQ.QueueName)
-  rabbitMQ.Send(img)
-  rabbitMQ.CloseChannel()
-  rabbitMQ.Close()
+func SendImageToQueue(img []byte) error{
+  r := NewRabbitMQ()
+  if err:= r.Connect(); err != nil {
+    return err
+  }
+  if err := r.CreateChannel(); err != nil {
+    return err
+  }
+  if err := r.CreateQueue(r.QueueName); err != nil {
+    return err
+  }
+  if err := r.Send(img); err != nil {
+    return err
+  }
+  r.CloseChannel()
+  r.Close()
+  return nil
 }
 
-func (r *RabbitMQ) Send(img []byte) {
-  err := r.Channel.Publish(
+func (r *RabbitMQ) Send(img []byte) error{
+  if err := r.Channel.Publish(
     "",
     r.Queue.Name,
     false,
@@ -24,10 +33,10 @@ func (r *RabbitMQ) Send(img []byte) {
       ContentType: "text/plain",
       Body:        img,
     },
-  )
-  if err != nil {
-    panic(err)
+  ); err != nil {
+    return err
   }
+  return nil
 }
 
 

@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -15,7 +14,6 @@ type ImageStorage struct {
 }
 
 func NewStorage(storagePath string) *ImageStorage {
-
 	return &ImageStorage{
 		storagePath: storagePath,
 	}
@@ -44,7 +42,6 @@ func (fs *ImageStorage) LoadIdFromFiles() error {
         return err
     }
 	LastImageID = id
-	log.Println("[INFO] Last image id is", LastImageID)
 	return nil
 }
 

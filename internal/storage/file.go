@@ -3,7 +3,6 @@ package storage
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -34,7 +33,6 @@ func (fs *ImageStorage) SaveImage(quality string, img []byte) error {
 
   err := os.WriteFile(imgPath, img, 0644)
   if err != nil {
-		log.Fatal(err)
     return err
   }
 
