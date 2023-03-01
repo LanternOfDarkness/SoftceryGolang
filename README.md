@@ -32,6 +32,7 @@ In this project, I used the following technologies:
 
 - Golang
 - RabbitMQ
+- Gin
 
 # API
 
